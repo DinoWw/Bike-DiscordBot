@@ -34,10 +34,7 @@ module.exports = {
       return fs.writeFile("${__dirname}/../data/nameById.json", JSON.stringify(idName)).then(() => {
          console.log(`Changed name from ${prevName} to ${name} for id ${id}`);
       })
-
    }
-
-
 }
 
 
@@ -53,3 +50,4 @@ async function loadIdNameTable(){
       console.log("Loaded ID-Name table")
    })
 }
+

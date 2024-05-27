@@ -47,6 +47,37 @@ for (const folder of commandFolders) {
 	}
 }
 
+// read handlers
+const [buttonHandlers, modalHandlers] = [{}, {}];
+const buttonPath = path.join(__dirname, 'handlers/button');
+const modalPath = path.join(__dirname, 'handlers/modal');
+const buttonFiles = fs.readdirSync(buttonPath).filter(file => file.endsWith('.js'));
+const modalFiles = fs.readdirSync(modalPath).filter(file => file.endsWith('.js'));
+
+for (const file of buttonFiles) {
+	const filePath = path.join(buttonPath, file);
+	const handler = require(filePath);
+	if ('prefix' in handler && 'execute' in handler) {
+		buttonHandlers[handler.prefix] = handler.execute;
+	} else {
+		console.log(`[WARNING] The handler at ${filePath} is missing a required "prefix" or "execute" property.`);
+	}
+}
+
+for (const file of modalFiles) {
+	const filePath = path.join(modalPath, file);
+	const handler = require(filePath);
+	if ('prefix' in handler && 'execute' in handler) {
+		modalHandlers[handler.prefix] = handler.execute;
+	} else {
+		console.log(`[WARNING] The handler at ${filePath} is missing a required "prefix" or "execute" property.`);
+	}
+}
+
+
+
+
+
 // setup command responses
 
 client.on(Events.InteractionCreate, async interaction => {
@@ -71,98 +102,24 @@ client.on(Events.InteractionCreate, async interaction => {
 			}
 		}
 	}
-	// TODO: load button interaction handlers from separate file
+	 	
 	else if ( interaction.isButton() ){
-		//interaction.deferUpdate();
 		
 		const commandCode = interaction.customId.split('_', 1)[0];
+		console.log(buttonHandlers, commandCode);
+		// TODO: wrap in try catch in case interaction is not registered
+		buttonHandlers[commandCode](interaction);
 
-		switch(commandCode){
-			case "removeMessage":
-				interaction.deferUpdate();
-				interaction.deleteReply();
-			break;
-			case "defaultRegister":{
-				const data = interaction.customId.slice(commandCode.length+1);
-				const _index = data.indexOf('_')
-				if(_index == -1){
-					console.error(`Invalid button Id`);
-					break;
-				}
-				// else:
-				const [ name, id ] = [data.slice(_index+1), data.slice(0, _index)]
-				const storedName = dataInterface.nameById(id);
-				if(storedName != undefined){
-					// inform the user something went wrong
-					console.error(`Attempted to add ${name} under id ${id} when ${id} is already ${storedName}`);
-					interaction.update({
-						content: `Somthing went wrong adding name ${name} under id ${id}. Contact the admins.`,
-						components: []
-					})
-					break;
-				}
-				// else:
-				console.log(`Adding name ${name} under id ${id}`);
-
-				dataInterface.addNameForId(name, id).then(() => {
-					interaction.update(messageInterface.scoringPrompt(id));
-				}).catch((err) => {
-					interaction.update(messageInterface.critcalError());
-					throw err;
-				});
-			break;
-			}
-			case "renamedRegister":{
-				const data = interaction.customId.slice(commandCode.length+1);
-				const _index = data.indexOf('_')
-				if(_index == -1){
-					console.error(`Invalid button Id`);
-					break;
-				}
-				// else:
-				const [ name, id ] = [data.slice(_index+1), data.slice(0, _index)]
-				
-
-				console.log(`Prompting new name for (${name} ${id})`);
-
-				await interaction.showModal(messageInterface.modalInputNamePrompt(id, name));
-				interaction.deleteReply();
-				// TODO: would be cool to just update the message once everything is recieved
-				// 	but this dont work and is probably impossible
-				//interaction.update(messageInterface.scoringPrompt(id));
-
-
-			break;
-			}
-
-			//interaction.message.delete();
-		}
-
-
-		/*
-		interaction.update({
-			content: `Receieved input from button: ${interaction.customId}`,
-			components: []
-		})*/
 	}
 	else if (interaction.isModalSubmit()){
-
-		console.log(interaction.fields.fields)
 
 		interaction.fields.fields.forEach((field) => {
 			const commandCode = field.customId.split('_', 1)[0];
 			const data = field.customId.slice(commandCode.length+1);
 
-			switch(commandCode){
-				case "register": {
-					dataInterface.addNameForId(field.value, data).then(() => {
-						return interaction.reply(messageInterface.scoringPrompt(data));
-					});
+			// TODO: wrap in try catch
+			modalHandlers[commandCode](interaction, field, data);
 
-
-					break;
-				}
-			}
 		})
 
 	}
@@ -185,6 +142,7 @@ interaction.update({
 // first edit the message to say working..., then make it say what it did or didnt do
 // post requests for working... and actual work can go in paralell, 
 // then the final edit only after the table was altered
+// make it say 'princess pussy slay queen' at random times
 */
 
 

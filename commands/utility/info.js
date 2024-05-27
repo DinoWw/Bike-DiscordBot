@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const fetchMemberById = require('../../util/fetchMemberById');
+const fetchMemberById = require('../../util/fetchMemberById.js');
 
 const dataInterface = require("../../scripts/dataInterface.js");
 const messageInterface = require("../../scripts/messageInterface.js");
@@ -17,23 +17,22 @@ module.exports = {
       // await is needed so that future responses with followUp() do not raise errors
       await interaction.deferReply({ephemeral: true});
       
-      // TODO: check rigorously if it works as intended
+      // TODO: check why replies seem to cascade instead of coming simontaneously
       await interaction.channel.members.fetch({}).then((members) => {
          members.each(async (val, id) => {
             if(id == botId) return;
 
             let name = dataInterface.nameById(id)
 
-            // if user is not registered in the table:
             if(name == undefined){
-               name = (await fetchMemberById(id, interaction)).displayName;
-               interaction.followUp(messageInterface.addDefaultNamePrompt(id, name));
-               return;
+               fetchMemberById(id, interaction).then((member) => {
+                  name = member.displayName;
+                  return interaction.followUp(messageInterface.addDefaultNamePrompt(id, name));
+               })
             }
-            // else:
-            // TODO: it would be cleaner if these messages did not respond to one another
-            // or the original command and instead were sent as separate messages
-            interaction.followUp(messageInterface.scoringPrompt(id));
+            else {
+               interaction.followUp(messageInterface.scoringPrompt(id));
+            }
          })
       })
    },

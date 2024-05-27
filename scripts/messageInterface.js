@@ -24,7 +24,8 @@ module.exports = {
             .setStyle(1)
          );
 
-         // TODO: make prettier message
+         // TODO: get some bitchess
+         // also make prettier message
 
          // reply with message and action row for each user
          return {
