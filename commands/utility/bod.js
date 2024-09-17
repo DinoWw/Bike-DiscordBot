@@ -11,7 +11,7 @@ const botId = 1164580596006260737;
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('info')        // TODO: rename or make another command
+		.setName('bod')
 		.setDescription('Fetches relevant information!'),
 	async execute(interaction) {
       // await is needed so that future responses with followUp() do not raise errors
