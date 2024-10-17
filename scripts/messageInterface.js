@@ -11,16 +11,20 @@ module.exports = {
       // create action row
       const actionRow = new ActionRowBuilder().addComponents(
          new ButtonBuilder()
-            .setCustomId(`solo_${memberId}`)
-            .setLabel("SOLO")
-            .setStyle(1),
-         new ButtonBuilder()
             .setCustomId(`one_${memberId}`)
             .setLabel("JEDAN BOD")
             .setStyle(1),
          new ButtonBuilder()
             .setCustomId(`two_${memberId}`)
             .setLabel("DVA BODA")
+            .setStyle(1),
+         new ButtonBuilder()
+            .setCustomId(`oneSolo_${memberId}`)
+            .setLabel("JEDAN SOLO")
+            .setStyle(1),
+         new ButtonBuilder()
+            .setCustomId(`twoSolo_${memberId}`)
+            .setLabel("DVA SOLO")
             .setStyle(1)
          );
 
@@ -75,10 +79,31 @@ module.exports = {
 
       return modal;
    },
-
+   scoreSuccessInfo: (name, date, points, solo = false) => {
+      return {
+         content: `:white_check_mark: Successfully entered ${points} points to ${name} on ${date}${solo ? "as a solo ride" : ""}.`,
+         components: [],
+         ephemeral: true
+      }
+   },
+   noName: (name) => {
+      return {
+         content: `:x: No person with name ${name}.`,
+         components: [],
+         ephemeral: true
+      }
+   },
+   soloLimit: (name) => {
+      return {
+         content: `:x: ${name} excceeded the number of solo rides this semester.`,
+         components: [],
+         ephemeral: true
+      }
+   },
    critcalError: () => {
       return {
-         content: `Critical error occurred, contact the admins.`,
+         content: `:x::x::x: Critical error occurred, contact the admins.`,
+         components: [],
          ephemeral: true
       }
    }

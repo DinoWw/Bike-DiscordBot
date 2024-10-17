@@ -1,6 +1,6 @@
 # Setup
 
-## Configuration
+## 1. Configuration
 sheets-credentials/credentials.json
 ```json
 {
@@ -16,16 +16,26 @@ sheets-credentials/credentials.json
       ]
    }
 }
-```
+```env
 .env
-```
 DISCORD_BOT_TOKEN=
 DISCORD_CLIENT_ID=
 DISCORD_GUILD_ID=   # server ID
 ```
 
-## Register commands
-node deploy_commands.js
+## 2. Register commands
+`node deploy_commands.js`
 
-## Start bot
-node main.js
+## 3. Start bot
+`node main.js`
+If running with nodemon: `nodemon --ignore 'data/*' main.js`
+
+
+# Modules
+## sheets interface
+- must call and await authorize() before any other function calls
+
+# Known bugs
+- if two people have the same name, only one of them will ever get points. 
+   you can bypass this by registering one of them as Name Surname 1 
+   both in the table and through the bot

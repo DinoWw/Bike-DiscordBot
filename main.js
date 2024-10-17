@@ -3,13 +3,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
-const dataInterface = require('./scripts/dataInterface');
-const messageInterface = require("./scripts/messageInterface.js");
-
 require('dotenv').config()
 
 // add timestamps in front of log messages
 require('log-timestamp');
+
+const sheetsInterface = require("./scripts/sheetsInterface.js");
+sheetsInterface.authorize().then(()=>console.log("Google Sheets authentification complete"));
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -42,7 +42,7 @@ for (const folder of commandFolders) {
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
 		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			console.log(`[WARNING] The command at ${filePath} is missing the required "data" or "execute" property.`);
 		}
 	}
 }
@@ -81,7 +81,6 @@ for (const file of modalFiles) {
 // setup command responses
 
 client.on(Events.InteractionCreate, async interaction => {
-	// TODO: tu napravit handlere za button inpute
 	if (interaction.isChatInputCommand()){
 
 		const command = interaction.client.commands.get(interaction.commandName);
@@ -104,9 +103,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 	 	
 	else if ( interaction.isButton() ){
-		
 		const commandCode = interaction.customId.split('_', 1)[0];
-		console.log(buttonHandlers, commandCode);
 		// TODO: wrap in try catch in case interaction is not registered
 		buttonHandlers[commandCode](interaction);
 
