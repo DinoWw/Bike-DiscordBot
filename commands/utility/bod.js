@@ -3,6 +3,7 @@ const fetchMemberById = require('../../util/fetchMemberById.js');
 
 const dataInterface = require("../../scripts/dataInterface.js");
 const messageInterface = require("../../scripts/messageInterface.js");
+const authorize = require("../../util/authorize.js");
 
 // TODO: const SheetsInterface = require("");
 
@@ -14,6 +15,11 @@ module.exports = {
 		.setName('bod')
 		.setDescription('Unosi bodove korisnicima iz threada'),
 	async execute(interaction) {
+      
+      if(!authorize(interaction)){
+         interaction.reply(`You are not authorized to run this command.`);
+         return;
+      }
       // await is needed so that future responses with followUp() do not raise errors
       await interaction.deferReply({ephemeral: true});
       

@@ -1,13 +1,14 @@
 
 const fs = require("fs").promises;
 
-
+const SEM_CONFIG_FILENAME = "semesterConfig.json";
+const NAME_ID_FILENAME = "nameById.json"
 
 let idName = {};
-loadIdNameTable();
+let semConfig = {};
+Promise.all([loadIdNameTable(), loadSemesterConfig()])
+.then(() => console.log("Loaded config files"));
 
-// TODO: likely not the best idea to open a file every time I need a json value
-//    is it possible to make a global var and then just reaload it every time it cghanges?
 module.exports = {
    nameById: (id) => {
       return idName[id]
@@ -19,7 +20,7 @@ module.exports = {
 
       idName[id] = name;
 
-      return fs.writeFile("${__dirname}/../data/nameById.json", JSON.stringify(idName)).then(()=>{
+      return fillFile(NAME_ID_FILENAME, idName).then(()=>{
          console.log(`Set name ${name} for id ${id}`);
       });
 
@@ -31,23 +32,49 @@ module.exports = {
       const prevName = idName[id];      
       idName[id] = name;
 
-      return fs.writeFile("${__dirname}/../data/nameById.json", JSON.stringify(idName)).then(() => {
+      return fillFile(NAME_ID_FILENAME, idName).then(() => {
          console.log(`Changed name from ${prevName} to ${name} for id ${id}`);
       })
+   },
+
+   setPrivilegedRole: async function (roleId) {
+      semConfig.privilegedRole = roleId;
+      
+      return fillFile(SEM_CONFIG_FILENAME, semConfig).then(() => {
+         console.log(`Set privileged role to ${roleId}`);
+      })
+   },
+   getPrivilegedRole: function () {
+      return semConfig.privilegedRole;
    }
 }
 
+async function fillFile(fileName, content) {
+   return fs.writeFile(`${__dirname}/../data/${fileName}`, JSON.stringify(content))
+}
 
-async function loadIdNameTable(){
-   return fs.readFile(`${__dirname}/../data/nameById.json`, {encoding:'utf8'}).then((data) => {
+async function loadFile(fileName){
+   return fs.readFile(`${__dirname}/../data/${fileName}`, {encoding:'utf8'}).then((data) => {
 
       if(data == '') {
-         idName = {};
+         content = {};
       }
       else {
-         idName = JSON.parse(data);
+         content = JSON.parse(data);
       }
-      console.log("Loaded ID-Name table")
+      return content
+   }).catch(e => {
+      // TODO: create file
+      fs.writeFile( `${__dirname}/../data/${fileName}`, "{}");
+      return {}; 
    })
+}
+
+async function loadSemesterConfig() {
+   semConfig = await loadFile(SEM_CONFIG_FILENAME);
+}
+
+async function loadIdNameTable(){
+   idName = await loadFile(NAME_ID_FILENAME);
 }
 
