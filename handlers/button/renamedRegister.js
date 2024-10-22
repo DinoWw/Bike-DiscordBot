@@ -11,7 +11,7 @@ module.exports = {
       const data = interaction.customId.slice(commandCode.length+1);
       const _index = data.indexOf('_')
       if(_index == -1){
-         console.error(`Invalid button Id`);
+         console.log(`Invalid button Id`);
          return;
       }
       // else:

@@ -9,7 +9,7 @@ module.exports = {
       const data = interaction.customId.slice(commandCode.length+1);
       const _index = data.indexOf('_')
       if(_index == -1){
-         console.error(`Invalid button Id`);
+         console.log(`Invalid button Id`);
          return;
       }
       // else:
@@ -17,7 +17,7 @@ module.exports = {
       const storedName = dataInterface.nameById(id);
       if(storedName != undefined){
          // inform the user something went wrong
-         console.error(`Attempted to add ${name} under id ${id} when ${id} is already ${storedName}`);
+         console.log(`Attempted to add ${name} under id ${id} when ${id} is already ${storedName}`);
          interaction.update({
             content: `Somthing went wrong adding name ${name} under id ${id}. Contact the admins.`,
             components: []

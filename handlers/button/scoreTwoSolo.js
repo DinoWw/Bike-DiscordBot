@@ -21,11 +21,11 @@ module.exports = {
          interaction.update(messageInterface.scoreSuccessInfo(userName, date, 2, true));
       }).catch((e) => {
          if( e instanceof sheetsInterface.UnknownPersonError){
-            console.error(`Error entering two points to ${userName} on ${date}, no user ${userName}`);
+            console.log(`Error entering two points to ${userName} on ${date}, no user ${userName}`);
             interaction.update(messageInterface.noName(userName));
          }
          else if( e instanceof sheetsInterface.SoloRideError){
-            console.error(`Error entering two points to ${userName} on ${date}, too many solo rides`);
+            console.log(`Error entering two points to ${userName} on ${date}, too many solo rides`);
             interaction.update(messageInterface.soloLimit(userName));
          }
          else{
