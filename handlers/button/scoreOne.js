@@ -20,7 +20,7 @@ module.exports = {
          interaction.update(messageInterface.scoreSuccessInfo(userName, date, 1));
       }).catch((e) => {
          if( e instanceof sheetsInterface.UnknownPersonError){
-            console.error(`Error entering one point to ${userName} on ${date}, no user ${userName}`);
+            console.log(`Error entering one point to ${userName} on ${date}, no user ${userName}`);
             interaction.update(messageInterface.noName(userName));
          }
          else{
