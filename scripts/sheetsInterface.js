@@ -120,14 +120,19 @@ async function rowByName(name) {
     await reloadNames();
   }
 
-  let rowId = _nameColumnCache.findIndex((n) => n == name);
+  let rowId = _nameColumnCache.findIndex((n) => isSameName(n, name));
   if(rowId == -1){
     await reloadNames();
-    rowId = _nameColumnCache.findIndex((n) => n == name);
+    rowId = _nameColumnCache.findIndex((n) => isSameName(n, name));
     if(rowId == -1)
       throw new UnknownPersonError(`No person with name ${name}`);
   }
   return rowId + 2;
+}
+
+// string params
+function isSameName(a, b){
+  return a.trim().toLowerCase() == b.trim().toLowerCase();
 }
 
 async function reloadNames() {
