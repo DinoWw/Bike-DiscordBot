@@ -22,7 +22,7 @@ const NAME_COLUMN = 'C';
 const FIRST_DATE_COLUMN = 'G';
 const DATE_ROW = 1;
 
-var SOLO_RIDES = 1;
+var SOLO_RIDES = 2;
 
 var _nameColumnCache = [];
 var _dateRowCache = [];
@@ -83,7 +83,7 @@ async function authorize() {
 }
 
 async function getSingleValue(location) {
-  // TODO: maybe implement location valicity checks
+  // TODO: maybe implement location validity checks
   const res = await sheets.spreadsheets.values.get({
     majorDimension: 'COLUMNS',
     range: location,
