@@ -106,5 +106,27 @@ module.exports = {
          components: [],
          ephemeral: true
       }
+   },
+   datePrompt(startDate, dateCount){
+
+      let components = [];
+      for(let date = startDate; dateCount!= 0; dateCount--){
+         components.push(
+            new ButtonBuilder()
+            .setCustomId(`scoreWithDate_${date}`)
+            .setLabel(`${date.getDate()}.${date.getMonth()+1}.`)
+            .setStyle(1)
+         );
+
+         date.setDate(date.getDate() - 1);
+      }
+
+      const actionRow = new ActionRowBuilder(...components);
+
+      return {
+         content: `Choose the ride date.`,
+         components: [actionRow],
+         ephemeral: true
+      }
    }
 }

@@ -23,23 +23,28 @@ module.exports = {
       // await is needed so that future responses with followUp() do not raise errors
       await interaction.deferReply({ephemeral: true});
       
+      const message = (await interaction.channel.messages.fetch({limit: 1, cache: false})).at(0);
+      const date = new Date(message.createdTimestamp);
+
+      await interaction.followUp(messageInterface.datePrompt(date, 7));
+
       // TODO: check why replies seem to cascade instead of coming simontaneously
-      await interaction.channel.members.fetch({}).then((members) => {
-         members.each(async (val, id) => {
-            if(id == botId) return;
+      // await interaction.channel.members.fetch({}).then((members) => {
+      //    members.each(async (val, id) => {
+      //       if(id == botId) return;
 
-            let name = dataInterface.nameById(id)
+      //       let name = dataInterface.nameById(id)
 
-            if(name == undefined){
-               fetchMemberById(id, interaction).then((member) => {
-                  name = member.displayName;
-                  return interaction.followUp(messageInterface.addDefaultNamePrompt(id, name));
-               })
-            }
-            else {
-               interaction.followUp(messageInterface.scoringPrompt(id));
-            }
-         })
-      })
+      //       if(name == undefined){
+      //          fetchMemberById(id, interaction).then((member) => {
+      //             name = member.displayName;
+      //             return interaction.followUp(messageInterface.addDefaultNamePrompt(id, name));
+      //          })
+      //       }
+      //       else {
+      //          interaction.followUp(messageInterface.scoringPrompt(id));
+      //       }
+      //    })
+      // })
    },
 };
