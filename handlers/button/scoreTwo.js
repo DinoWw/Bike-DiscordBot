@@ -7,20 +7,19 @@ module.exports = {
    prefix: "two",
    async execute(interaction) {
      
-      const userName = dataInterface.nameById(interaction.customId.split('_', 2)[1]);
+      const args = interaction.customId.split('_', 3);
+      const date = new Date(parseInt(args[1]));
+      const userName = dataInterface.nameById(args[2]);
 
-      const message = (await interaction.channel.messages.fetch({limit: 1, cache: false})).at(0);
+      const dateString = `${date.getDate()}.${date.getMonth()+1}.`;
 
-      const timeStamp = new Date(message.createdTimestamp);
-      const date = `${timeStamp.getDate()}.${timeStamp.getMonth()+1}.`;
-
-      sheetsInterface.enterPoints(userName, date, 2)
+      sheetsInterface.enterPoints(userName, dateString, 2)
       .then(() => {
-         console.log(`Entered two points to ${userName} on ${date}`);
-         interaction.update(messageInterface.scoreSuccessInfo(userName, date, 2));
+         console.log(`Entered two points to ${userName} on ${dateString}`);
+         interaction.update(messageInterface.scoreSuccessInfo(userName, dateString, 2));
       }).catch((e) => {
          if( e instanceof sheetsInterface.UnknownPersonError){
-            console.log(`Error entering two points to ${userName} on ${date}, no user ${userName}`);
+            console.log(`Error entering two points to ${userName} on ${dateString}, no user ${userName}`);
             interaction.update(messageInterface.noName(userName));
          }
          else{

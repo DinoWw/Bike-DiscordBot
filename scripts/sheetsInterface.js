@@ -237,9 +237,8 @@ const exportObject = {
   enterSolo: async function (name, date, points) {
     
     const loc = `${SOLO_COLUMN}${await rowByName(name)}`;
-    const soloN = await getSingleValue(loc);
+    const soloN = parseInt(await getSingleValue(loc));
 
-    // TODO: check if this works for non zero previous solo rides
     if(soloN >= SOLO_RIDES){
       throw new SoloRideError(`Upisivanje bi premašilo maksimum od ${SOLO_RIDES} vožnji.`);
     }

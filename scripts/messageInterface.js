@@ -4,35 +4,32 @@ const dataInterface = require("./dataInterface.js");
 
 
 module.exports = {
-   scoringPrompt: (memberId) => {
+   scoringPrompt: (memberId, date) => {
 
-      //TODO: action row is kinda ugly, set emojis for buttons
+      const timeStamp = date.getTime();
 
       // create action row
       const actionRow = new ActionRowBuilder().addComponents(
          new ButtonBuilder()
-            .setCustomId(`one_${memberId}`)
+            .setCustomId(`one_${timeStamp}_${memberId}`)
             .setLabel("JEDAN BOD")
             .setStyle(1),
          new ButtonBuilder()
-            .setCustomId(`two_${memberId}`)
+            .setCustomId(`two_${timeStamp}_${memberId}`)
             .setLabel("DVA BODA")
             .setStyle(1),
          new ButtonBuilder()
-            .setCustomId(`oneSolo_${memberId}`)
+            .setCustomId(`oneSolo_${timeStamp}_${memberId}`)
             .setLabel("JEDAN SOLO")
             .setStyle(1),
          new ButtonBuilder()
-            .setCustomId(`twoSolo_${memberId}`)
+            .setCustomId(`twoSolo_${timeStamp}_${memberId}`)
             .setLabel("DVA SOLO")
             .setStyle(1)
-         );
+      );
 
-         // TODO: get some bitchess
-         // also make prettier message
-
-         // reply with message and action row for each user
-         return {
+      // reply with message and action row for each user
+      return {
          content: `Points for ${dataInterface.nameById(memberId)}`,
          components: [actionRow],
          ephemeral: true
@@ -107,13 +104,25 @@ module.exports = {
          ephemeral: true
       }
    },
+   unauthorizedInfo: () => {
+      return {
+         content: `You are not authorized to run this command.`,
+         components: [],
+         ephemeral: true
+      }
+   },
    datePrompt(startDate, dateCount){
+
+      // TODO: if dateCount is more than 5, attach multiple action rows, up to 25 buttons
+      if(dateCount > 5){
+         console.log("ERROR: TODO: implement; messageInterface.js");
+      }
 
       let components = [];
       for(let date = startDate; dateCount!= 0; dateCount--){
          components.push(
             new ButtonBuilder()
-            .setCustomId(`scoreWithDate_${date}`)
+            .setCustomId(`scoreWithDate_${date.getTime()}`)
             .setLabel(`${date.getDate()}.${date.getMonth()+1}.`)
             .setStyle(1)
          );
@@ -121,7 +130,7 @@ module.exports = {
          date.setDate(date.getDate() - 1);
       }
 
-      const actionRow = new ActionRowBuilder(...components);
+      const actionRow = new ActionRowBuilder().addComponents(...components);
 
       return {
          content: `Choose the ride date.`,
